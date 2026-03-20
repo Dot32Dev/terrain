@@ -54,24 +54,24 @@ int main() {
 	// }; 
 
 	terrain->set_scale(2.0/128, 2.0/128, 0.5/128/2);
-	float* vertices = terrain->get_vertex_data();
-	unsigned int* indices = terrain->get_index_data();
-	int index_count = terrain->get_index_count();
+	// float* vertices = terrain->get_vertex_data();
+	// unsigned int* indices = terrain->get_index_data();
+	// int index_count = terrain->get_index_count();
 
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO); 
+	// unsigned int VAO;
+	// glGenVertexArrays(1, &VAO); 
 
-	glBindVertexArray(VAO);
+	// glBindVertexArray(VAO);
 
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, indices, GL_STATIC_DRAW); 
+	// unsigned int EBO;
+	// glGenBuffers(1, &EBO);
+	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, indices, GL_STATIC_DRAW); 
 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain->get_vertex_component_count(), vertices, GL_STATIC_DRAW);
+	// unsigned int VBO;
+	// glGenBuffers(1, &VBO);
+	// glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain->get_vertex_component_count(), vertices, GL_STATIC_DRAW);
 
 	// Load shaders from file
 	ifstream vs_file("res/vert.glsl");
@@ -123,33 +123,34 @@ int main() {
 
 	glUseProgram(shader_program);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3* sizeof(float)));
-	glEnableVertexAttribArray(1);
+	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+	// glEnableVertexAttribArray(0);
+	// glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3* sizeof(float)));
+	// glEnableVertexAttribArray(1);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 128, 128, 0, GL_RED, GL_UNSIGNED_BYTE, terrain->get_terrain_data());
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// unsigned int texture;
+	// glGenTextures(1, &texture);
+	// glBindTexture(GL_TEXTURE_2D, texture);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 128, 128, 0, GL_RED, GL_UNSIGNED_BYTE, terrain->get_terrain_data());
+	// glGenerateMipmap(GL_TEXTURE_2D);
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	// glBindTexture(GL_TEXTURE_2D, texture);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shader_program);
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+		// glBindVertexArray(VAO);
+		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
+		terrain->draw();
 
 		glfwSwapBuffers(window);
 	}

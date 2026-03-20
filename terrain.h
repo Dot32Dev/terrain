@@ -17,27 +17,14 @@ class Terrain {
 		/// @return A pointer to a terrain object which can be drawn, or nullptr
 		static Terrain* from_raw(string file_name, int size);
 
+		/// @brief Draws the terrain
+		void draw();
+
 		/// @brief Set the scale of the terrain
 		/// @param x The X scale
 		/// @param y The Y scale
 		/// @param z The Z scale
 		void set_scale(float x, float y, float z);
-
-		/// @brief Get the raw terrain heightmap data
-		/// @return The raw terrain data
-		const unsigned char* get_terrain_data();
-
-		/// @brief Get the vertex data
-		/// @return The vertex data
-		float* get_vertex_data();
-
-		/// @brief Get the index data
-		/// @return The index data
-		unsigned int* get_index_data();
-
-		/// @brief Get index count
-		/// @return index count
-		int get_index_count(); 
 
 		/// @brief Gets the count of individual items in the vertex buffer
 		/// Not to be confused with vertex count, as each vertex has 5 floats
@@ -52,10 +39,16 @@ class Terrain {
 		float scale_y;
 		float scale_z;
 		int size;
+		unsigned int VAO;
+		unsigned int VBO;
+		unsigned int EBO;
+		unsigned int texture;
 		// Don't use the constructor, use a static method for either image or
 		// generated
 		Terrain();
 		void generate_buffers();
+		void renderer_init();
+		void update_vao();
 };
 
 #endif TERRAIN_H

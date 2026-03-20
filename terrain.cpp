@@ -1,5 +1,6 @@
 #include "terrain.h"
 #include <fstream>
+#include <glad/glad.h>
 
 using std::ifstream;
 using std::ios;
@@ -26,7 +27,11 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	infile.read(reinterpret_cast<char*>(terrain->terrain_data.data()), length);
 	infile.close();
 	terrain->size = size;
-	terrain->set_scale(1.0, 1.0, 1.0);
+	terrain->scale_x = 1.0;
+	terrain->scale_y = 1.0;
+	terrain->scale_z = 1.0;
+	terrain->generate_buffers();
+	terrain->renderer_init();
 	return terrain;
 }
 
@@ -35,10 +40,7 @@ void Terrain::set_scale(float x, float y, float z) {
 	this->scale_y = y;
 	this->scale_z = z;
 	this->generate_buffers();
-}
-
-const unsigned char* Terrain::get_terrain_data() {
-	return this->terrain_data.data();
+	this->update_vao();
 }
 
 void Terrain::generate_buffers() {
@@ -71,18 +73,102 @@ void Terrain::generate_buffers() {
 	}
 }
 
-float* Terrain::get_vertex_data() {
-	return this->vertex_buffer.data();
-}
-
-unsigned int* Terrain::get_index_data() {
-	return this->index_buffer.data();
-}
-
-int Terrain::get_index_count() {
-	return this->index_buffer.size();
-}
-
 int Terrain::get_vertex_component_count() {
 	return this->vertex_buffer.size();
+}
+
+void Terrain::renderer_init() {
+	glGenVertexArrays(1, &VAO); 
+	glBindVertexArray(VAO);
+
+	// Index buffer (EBO)
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(
+		GL_ELEMENT_ARRAY_BUFFER, 
+		sizeof(unsigned int) * index_buffer.size(), 
+		index_buffer.data(), 
+		GL_STATIC_DRAW
+	); 
+
+	// Vertex buffer (VBO)
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(
+		GL_ARRAY_BUFFER, 
+		sizeof(float) * vertex_buffer.size(), 
+		vertex_buffer.data(), 
+		GL_STATIC_DRAW
+	);
+
+	// Vertex layout
+	// Position
+	glVertexAttribPointer(
+		0, 
+		3, 
+		GL_FLOAT, 
+		GL_FALSE, 
+		5 * sizeof(float), 
+		(void*)0
+	);
+	glEnableVertexAttribArray(0);
+	// Texture coordinates
+	glVertexAttribPointer(
+		1, 
+		2, 
+		GL_FLOAT, 
+		GL_FALSE, 
+		5 * sizeof(float), 
+		(void*)(3 * sizeof(float))
+	);
+	glEnableVertexAttribArray(1);
+
+	// Texture setup
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(
+		GL_TEXTURE_2D, 
+		0, 
+		GL_RED, 
+		128, 
+		128, 
+		0, 
+		GL_RED, 
+		GL_UNSIGNED_BYTE, 
+		terrain_data.data()
+	);
+	glGenerateMipmap(GL_TEXTURE_2D);
+}
+
+void Terrain::draw() {
+	glBindVertexArray(VAO);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glDrawElements(GL_TRIANGLES, index_buffer.size(), GL_UNSIGNED_INT, 0);
+}
+
+void Terrain::update_vao() {
+	glBindVertexArray(VAO);
+
+	// Index buffer (EBO)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(
+		GL_ELEMENT_ARRAY_BUFFER, 
+		sizeof(unsigned int) * index_buffer.size(), 
+		index_buffer.data(), 
+		GL_STATIC_DRAW
+	); 
+
+	// Vertex buffer (VBO)
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(
+		GL_ARRAY_BUFFER, 
+		sizeof(float) * vertex_buffer.size(), 
+		vertex_buffer.data(), 
+		GL_STATIC_DRAW
+	);
 }
