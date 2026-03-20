@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "terrain.h"
 
 const int WIN_W = 800;
 const int WIN_H = 600;
@@ -21,6 +22,9 @@ int main() {
 
 	resize(window, WIN_W, WIN_H);
 	glfwSetFramebufferSizeCallback(window, resize);
+
+	Terrain* terrain = Terrain::from_raw("height128.raw", 128);
+	if (!terrain) return -3;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);

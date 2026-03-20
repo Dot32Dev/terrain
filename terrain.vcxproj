@@ -143,7 +143,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="third_party\GLAD\src\glad.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="terrain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
