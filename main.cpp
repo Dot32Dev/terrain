@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 #include "terrain.h"
 
 const int WIN_W = 800;
@@ -25,6 +26,8 @@ int main() {
 
 	Terrain* terrain = Terrain::from_raw("height128.raw", 128);
 	if (!terrain) return -3;
+
+	glm::mat4 transform = glm::mat4(1.0);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);
