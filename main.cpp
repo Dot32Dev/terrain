@@ -17,6 +17,7 @@ const int WIN_W = 800;
 const int WIN_H = 800;
 
 bool line_mode = false;
+Uniform* projection_uniform_pointer;
 
 void resize(GLFWwindow* window, int width, int height);
 void key(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -35,14 +36,11 @@ int main() {
 	
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -3;
 
-	resize(window, WIN_W, WIN_H);
 	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetKeyCallback(window, key);
 
 	Terrain* terrain = Terrain::from_raw("res/height128.raw", 128);
 	if (!terrain) return -4;
-
-	glm::mat4 transform = glm::mat4(1.0);
 
 	// float vertices[] = {
 	// 	0.5f,  0.5f, 0.0f, 1.0f,  0.0f,  // top right
@@ -127,9 +125,29 @@ int main() {
 
 	Shader shader("res/vert.glsl", "res/frag.glsl");
 	shader.use(); 
-	Uniform model_transform = shader.get_uniform("model");
-	model_transform.send(transform);
 
+
+	glm::mat4 model = glm::mat4(1.0);
+	Uniform model_uniform = shader.get_uniform("model");
+	model_uniform.send(model);
+
+	glm::mat4 view = glm::mat4(1.0);
+	Uniform view_uniform = shader.get_uniform("view");
+	view_uniform.send(view);
+
+	glm::mat4 projection = glm::mat4(1.0);
+	projection = glm::perspective(
+		glm::radians(90.0f), 
+		(float)WIN_W/WIN_H, 
+		0.1f, 
+		100.0f
+	);
+
+	Uniform projection_uniform = shader.get_uniform("projection");
+	projection_uniform_pointer = &projection_uniform;
+	projection_uniform.send(projection);
+
+	resize(window, WIN_W, WIN_H);
 
 	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
 	// glEnableVertexAttribArray(0);
@@ -159,8 +177,8 @@ int main() {
 		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 		terrain->draw();
 
-		transform = glm::rotate(transform, glm::radians(-0.2f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model_transform.send(transform);
+		model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model_uniform.send(model);
 
 		glfwSwapBuffers(window);
 	}
@@ -171,6 +189,14 @@ int main() {
 
 void resize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+	glm::mat4 projection = glm::mat4(1.0);
+	projection = glm::perspective(
+		glm::radians(90.0f), 
+		(float)width/height, 
+		0.1f, 
+		100.0f
+	);
+	projection_uniform_pointer->send(projection);
 }
 
 void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
