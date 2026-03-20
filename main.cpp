@@ -14,26 +14,31 @@ using std::endl;
 const int WIN_W = 800;
 const int WIN_H = 600;
 
+bool line_mode = false;
+
 void resize(GLFWwindow* window, int width, int height);
+void key(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main() {
-	glfwInit();
+	if (!glfwInit()) return -1;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* window = glfwCreateWindow(WIN_W, WIN_H, "Terrain", NULL, NULL);
-	if (window == NULL) return -1;
+	if (window == NULL) return -2;
 	
 	glfwMakeContextCurrent(window);
+	glfwShowWindow(window);
 	
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -2;
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return -3;
 
 	resize(window, WIN_W, WIN_H);
 	glfwSetFramebufferSizeCallback(window, resize);
+	glfwSetKeyCallback(window, key);
 
 	Terrain* terrain = Terrain::from_raw("res/height128.raw", 128);
-	if (!terrain) return -3;
+	if (!terrain) return -4;
 
 	glm::mat4 transform = glm::mat4(1.0);
 
@@ -116,8 +121,11 @@ int main() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
@@ -132,4 +140,16 @@ int main() {
 
 void resize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+		line_mode = !line_mode;
+
+		if (line_mode) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		} else {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
 }
