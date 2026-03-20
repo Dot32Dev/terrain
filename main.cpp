@@ -42,16 +42,21 @@ int main() {
 
 	glm::mat4 transform = glm::mat4(1.0);
 
-	float vertices[] = {
-		0.5f,  0.5f, 0.0f, 1.0f,  0.0f,  // top right
-		0.5f, -0.5f, 0.0f, 1.0f, 1.0f,   // bottom right
-		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f,  0.0f,  0.0f // top left
-	};
-	unsigned int indices[] = {  // note that we start from 0!
-		0, 1, 3,   // first triangle
-		1, 2, 3    // second triangle
-	}; 
+	// float vertices[] = {
+	// 	0.5f,  0.5f, 0.0f, 1.0f,  0.0f,  // top right
+	// 	0.5f, -0.5f, 0.0f, 1.0f, 1.0f,   // bottom right
+	// 	-0.5f, -0.5f, 0.0f, 0.0f, 1.0f,  // bottom left
+	// 	-0.5f,  0.5f, 0.0f,  0.0f,  0.0f // top left
+	// };
+	// unsigned int indices[] = {  // note that we start from 0!
+	// 	0, 1, 3,   // first triangle
+	// 	1, 2, 3    // second triangle
+	// }; 
+
+	terrain->set_scale(2.0/128, 2.0/128, 0.5/128/2);
+	float* vertices = terrain->get_vertex_data();
+	unsigned int* indices = terrain->get_index_data();
+	int index_count = terrain->get_index_count();
 
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO); 
@@ -61,12 +66,12 @@ int main() {
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, indices, GL_STATIC_DRAW); 
 
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * terrain->get_vertex_component_count(), vertices, GL_STATIC_DRAW);
 
 	// Load shaders from file
 	ifstream vs_file("res/vert.glsl");
@@ -144,7 +149,7 @@ int main() {
 
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 	}
