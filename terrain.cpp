@@ -37,3 +37,7 @@ void Terrain::set_scale(float x, float y, float z) {
 	this->scale_y = y;
 	this->scale_z = z;
 }
+
+const unsigned char* Terrain::get_terrain_data() {
+	return this->terrain_data.data();
+}

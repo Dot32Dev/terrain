@@ -17,7 +17,15 @@ class Terrain {
 		/// @return A pointer to a terrain object which can be drawn, or nullptr
 		static Terrain* from_raw(string file_name, int size);
 
+		/// @brief Set the scale of the terrain
+		/// @param x The X scale
+		/// @param y The Y scale
+		/// @param z The Z scale
 		void set_scale(float x, float y, float z);
+
+		/// @brief Get the raw terrain heightmap data
+		/// @return The raw terrain data
+		const unsigned char* get_terrain_data();
 	private:
 		vector<unsigned char> terrain_data;
 		float scale_x;

@@ -12,7 +12,7 @@ using std::cout;
 using std::endl;
 
 const int WIN_W = 800;
-const int WIN_H = 600;
+const int WIN_H = 800;
 
 bool line_mode = false;
 
@@ -124,6 +124,19 @@ int main() {
 	glEnableVertexAttribArray(1);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 128, 128, 0, GL_RED, GL_UNSIGNED_BYTE, terrain->get_terrain_data());
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
