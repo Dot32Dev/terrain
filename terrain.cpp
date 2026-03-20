@@ -47,28 +47,28 @@ void Terrain::generate_buffers() {
 	vertex_buffer.clear();
 	index_buffer.clear();
 
-	for (int y = 0; y < size; y++) {
+	for (int z = 0; z < size; z++) {
 		for (int x = 0; x < size; x++) {
-			int z = terrain_data[y * size + x];
+			int y = terrain_data[z * size + x];
 			vertex_buffer.push_back((x - size / 2) * scale_x);
-			vertex_buffer.push_back((y - size / 2) * scale_y);
-			vertex_buffer.push_back(z * scale_z);
+			vertex_buffer.push_back(y * scale_y);
+			vertex_buffer.push_back((z - size / 2) * scale_z);
 			vertex_buffer.push_back(x / (float)size);
-			vertex_buffer.push_back(y / (float)size);
+			vertex_buffer.push_back(z / (float)size);
 		}
 	}
 
-	for (int y = 0; y < size-1; y++) {
+	for (int z = 0; z < size-1; z++) {
 		for (int x = 0; x < size-1; x++) {
 			// Triangle one
-			index_buffer.push_back(y * size + x); // Top left of tile
-			index_buffer.push_back(y * size + x + 1); // Top right of tile
-			index_buffer.push_back((y + 1) * size + x); // Bottom left of tile
+			index_buffer.push_back(z * size + x); // Top left of tile
+			index_buffer.push_back(z * size + x + 1); // Top right of tile
+			index_buffer.push_back((z + 1) * size + x); // Bottom left of tile
 
 			// Triangle two
-			index_buffer.push_back(y * size + x + 1); // Top right of tile
-			index_buffer.push_back((y + 1) * size + x + 1); // Bottom right
-			index_buffer.push_back((y + 1) * size + x); // Bottom left of tile
+			index_buffer.push_back(z * size + x + 1); // Top right of tile
+			index_buffer.push_back((z + 1) * size + x + 1); // Bottom right
+			index_buffer.push_back((z + 1) * size + x); // Bottom left of tile
 		}
 	}
 }

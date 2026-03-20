@@ -13,8 +13,8 @@ using std::stringstream;
 using std::cout;
 using std::endl;
 
-const int WIN_W = 800;
-const int WIN_H = 800;
+const int WIN_W = 1280;
+const int WIN_H = 720;
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
@@ -53,7 +53,8 @@ int main() {
 	// 	1, 2, 3    // second triangle
 	// }; 
 
-	terrain->set_scale(2.0/128, 2.0/128, 0.5/128/2);
+	// terrain->set_scale(2.0/128, 2.0/128, 0.5/128/2);
+	terrain->set_scale(5.0, 0.5, 5.0);
 	// float* vertices = terrain->get_vertex_data();
 	// unsigned int* indices = terrain->get_index_data();
 	// int index_count = terrain->get_index_count();
@@ -132,6 +133,7 @@ int main() {
 	model_uniform.send(model);
 
 	glm::mat4 view = glm::mat4(1.0);
+	view = glm::translate(view, glm::vec3(0.0f, -100.0f, -300.0f));
 	Uniform view_uniform = shader.get_uniform("view");
 	view_uniform.send(view);
 
@@ -169,6 +171,8 @@ int main() {
 
 	// glBindTexture(GL_TEXTURE_2D, texture);
 
+	glEnable(GL_DEPTH_TEST);
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,7 +181,7 @@ int main() {
 		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 		terrain->draw();
 
-		model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model_uniform.send(model);
 
 		glfwSwapBuffers(window);
@@ -193,8 +197,8 @@ void resize(GLFWwindow* window, int width, int height) {
 	projection = glm::perspective(
 		glm::radians(90.0f), 
 		(float)width/height, 
-		0.1f, 
-		100.0f
+		0.2f, 
+		1000.0f
 	);
 	projection_uniform_pointer->send(projection);
 }
