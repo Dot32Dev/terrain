@@ -83,7 +83,7 @@ Uniform::Uniform(
 	uniform_location(glGetUniformLocation(program_id, uniform.c_str()))
 {}
 
-void Uniform::send(const glm::mat4& matrix) {
+void Uniform::send(const mat4& matrix) {
 	// location, number of matrices, transposing, matrix
-	glUniformMatrix4fv(uniform_location, 1, GL_FALSE, glm::value_ptr(matrix));
+	glUniformMatrix4fv(uniform_location, 1, GL_FALSE, value_ptr(matrix));
 }

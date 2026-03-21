@@ -13,6 +13,9 @@ using std::ifstream;
 using std::stringstream;
 using std::cout;
 using std::endl;
+using glm::vec2;
+using glm::vec3;
+using glm::mat4;
 
 const int WIN_W = 1280;
 const int WIN_H = 720;
@@ -129,16 +132,16 @@ int main() {
 	shader.use(); 
 
 
-	glm::mat4 model = glm::mat4(1.0);
+	mat4 model = mat4(1.0);
 	Uniform model_uniform = shader.get_uniform("model");
 	model_uniform.send(model);
 
 	// Camera
-	Camera camera(glm::vec3(0.0f, 100.0f, 300.0f));
+	Camera camera(vec3(0.0f, 100.0f, 300.0f));
 	Uniform view_uniform = shader.get_uniform("view");
 	view_uniform.send(camera.get_view_matrix());
 
-	glm::mat4 projection = glm::mat4(1.0);
+	mat4 projection = mat4(1.0);
 	projection = glm::perspective(
 		glm::radians(90.0f), 
 		(float)WIN_W/WIN_H, 
@@ -192,37 +195,37 @@ int main() {
 			movement_speed *= 2.0;
 		}
 
-		glm::vec3 pos_input = glm::vec3(0.0f, 0.0f, 0.0f);
+		vec3 pos_input = vec3(0.0f, 0.0f, 0.0f);
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-			pos_input += glm::vec3(0.0f, 0.0f, -movement_speed);
+			pos_input += vec3(0.0f, 0.0f, -movement_speed);
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-			pos_input += glm::vec3(0.0f, 0.0f, movement_speed);
+			pos_input += vec3(0.0f, 0.0f, movement_speed);
 		}
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-			pos_input += glm::vec3(-movement_speed, 0.0f, 0.0f);
+			pos_input += vec3(-movement_speed, 0.0f, 0.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-			pos_input += glm::vec3(movement_speed, 0.0f, 0.0f);
+			pos_input += vec3(movement_speed, 0.0f, 0.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-			pos_input += glm::vec3(0.0f, movement_speed, 0.0f);
+			pos_input += vec3(0.0f, movement_speed, 0.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-			pos_input += glm::vec3(0.0f, -movement_speed, 0.0f);
+			pos_input += vec3(0.0f, -movement_speed, 0.0f);
 		}
-		glm::vec2 dir_input = glm::vec2(0.0f, 0.0f);
+		vec2 dir_input = vec2(0.0f, 0.0f);
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			dir_input += glm::vec2(0.0f, -rot_speed);
+			dir_input += vec2(0.0f, -rot_speed);
 		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			dir_input += glm::vec2(0.0f, rot_speed);
+			dir_input += vec2(0.0f, rot_speed);
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			dir_input += glm::vec2(-rot_speed, 0.0f);
+			dir_input += vec2(-rot_speed, 0.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			dir_input += glm::vec2(rot_speed, 0.0f);
+			dir_input += vec2(rot_speed, 0.0f);
 		}
 		camera.pos_input(pos_input);
 		camera.dir_input(dir_input);
@@ -232,7 +235,7 @@ int main() {
 		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 		terrain->draw();
 
-		// model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
+		// model = rotate(model, radians(-0.2f), vec3(0.0f, 1.0f, 0.0f));
 		// model_uniform.send(model);
 
 		glfwSwapBuffers(window);
@@ -244,7 +247,7 @@ int main() {
 
 void resize(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-	glm::mat4 projection = glm::mat4(1.0);
+	mat4 projection = mat4(1.0);
 	projection = glm::perspective(
 		glm::radians(90.0f), 
 		(float)width/height, 

@@ -13,13 +13,14 @@ using std::ifstream;
 using std::stringstream;
 using std::string;
 using std::map;
+using glm::mat4;
 
 class Uniform {
 	public:
 		/// @brief Send a mat4 to a uniform of a shader
 		/// Assumes the relevant shader is currently bound
 		/// @param matrix The matrix to send to the shader
-		void send(const glm::mat4& matrix);
+		void send(const mat4& matrix);
 	private:
 		friend class Shader; // So that only the shader may construct Uniforms
 		Uniform(unsigned int program_id, const string& uniform, Shader* shader);
