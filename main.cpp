@@ -7,6 +7,7 @@
 #include <iostream>
 #include "terrain.h"
 #include "shader.h"
+#include "camera.h"
 
 using std::ifstream;
 using std::stringstream;
@@ -132,10 +133,10 @@ int main() {
 	Uniform model_uniform = shader.get_uniform("model");
 	model_uniform.send(model);
 
-	glm::mat4 view = glm::mat4(1.0);
-	view = glm::translate(view, glm::vec3(0.0f, -100.0f, -300.0f));
+	// Camera
+	Camera camera(glm::vec3(0.0f, 100.0f, 300.0f));
 	Uniform view_uniform = shader.get_uniform("view");
-	view_uniform.send(view);
+	view_uniform.send(camera.get_view_matrix());
 
 	glm::mat4 projection = glm::mat4(1.0);
 	projection = glm::perspective(
@@ -173,16 +174,66 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
+	double delta_time = 0.0;
+	double last_frame = 0.0;
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		double current_frame = glfwGetTime();
+		delta_time = current_frame - last_frame;
+		last_frame = current_frame;
+
+		float movement_speed = 15 * delta_time;
+		float rot_speed = 1.5 * delta_time;
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+			movement_speed *= 2.0;
+		}
+
+		glm::vec3 pos_input = glm::vec3(0.0f, 0.0f, 0.0f);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+			pos_input += glm::vec3(0.0f, 0.0f, -movement_speed);
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+			pos_input += glm::vec3(0.0f, 0.0f, movement_speed);
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+			pos_input += glm::vec3(-movement_speed, 0.0f, 0.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			pos_input += glm::vec3(movement_speed, 0.0f, 0.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			pos_input += glm::vec3(0.0f, movement_speed, 0.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+			pos_input += glm::vec3(0.0f, -movement_speed, 0.0f);
+		}
+		glm::vec2 dir_input = glm::vec2(0.0f, 0.0f);
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+			dir_input += glm::vec2(0.0f, -rot_speed);
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+			dir_input += glm::vec2(0.0f, rot_speed);
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			dir_input += glm::vec2(-rot_speed, 0.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			dir_input += glm::vec2(rot_speed, 0.0f);
+		}
+		camera.pos_input(pos_input);
+		camera.dir_input(dir_input);
+		view_uniform.send(camera.get_view_matrix());
 
 		// glBindVertexArray(VAO);
 		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
 		terrain->draw();
 
-		model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model_uniform.send(model);
+		// model = glm::rotate(model, glm::radians(-0.2f), glm::vec3(0.0f, 1.0f, 0.0f));
+		// model_uniform.send(model);
 
 		glfwSwapBuffers(window);
 	}
