@@ -36,6 +36,16 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	return terrain;
 }
 
+void filter_pass(float* arr, int inc, float weight, int size) {
+	float prev = *arr;
+	int current_idx = inc;
+	for (int i = 1; i < size; i++) {
+		arr[current_idx] = weight * prev + (1.0 - weight) * arr[current_idx];
+		prev = arr[current_idx];
+		current_idx += inc;
+	}
+}
+
 Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 	// The temporary high-accuracy height array
 	float* heights = new float[size * size];
@@ -43,7 +53,7 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 		heights[i] = 0;
 	}
 
-	float max_height = 256;
+	float max_height = 255;
 	float min_height = 0;
 	srand(seed);
 	
@@ -59,17 +69,37 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 			z2 = rand()%size;
 		} while (x2 == x1 && z2 == z1);
 
+		// Raise some terrain;
 		for (int z = 0; z < size; z++) {
 			for (int x = 0; x < size; x++) {
 				// 2D cross product, aka dot product with perpendicular vector
 				int y = (x2 - x1) * (z - z1) - (z2 - z1) * (x - x1);
 				if (y > 0) {
 					heights[z * size + x] += jump;
-					// heights[z * size + x] += 10.0;
 				}
 			}
 
 		}
+
+		// Filter that 
+		for (int z = 0; z < size; z++) 
+			filter_pass(&heights[size * z], 1, fir, size);
+		for (int z = 0; z < size; z++) 
+			filter_pass(&heights[size * z  + size - 1], -1, fir, size);
+		for (int x = 0; x < size; x++) 
+			filter_pass(&heights[x], size, fir, size);
+		for (int x = 0; x < size; x++) 
+			filter_pass(&heights[size * (size - 1)], -size, fir, size);
+	}
+
+	// Get the range
+	float min = heights[0];
+	float max = heights[0];
+	for (int i = 0; i < size * size; i++) {
+		if (heights[i] > max) 
+			max = heights[i];
+		if (heights[i] < min) 
+			min = heights[i];
 	}
 
 	Terrain* terrain = new Terrain();
@@ -77,7 +107,7 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 	// Micro-optimisation that avoids reallocating the memory all the time 
 	terrain->terrain_data.resize(size * size);
 	for (int i = 0; i < size * size; i++) {
-		terrain->terrain_data[i] = heights[i];
+		terrain->terrain_data[i] = (heights[i] - min) / (max - min) * 255.0f;
 	}
 
 	delete heights;

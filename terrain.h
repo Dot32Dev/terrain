@@ -22,7 +22,7 @@ class Terrain {
 		/// @brief Procedurally generates a heightmap
 		/// @param seed The random seed to use
 		/// @param iter The number of iterations
-		/// @param fir The FIR filter parameter
+		/// @param fir The FIR filter weight parameter
 		/// @param size The size of the terrain
 		/// @return A pointer to a terrain object which can be drawn, or nullptr
 		static Terrain* from_fault_gen(int seed, int iter, float fir, int size);
