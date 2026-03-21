@@ -26,6 +26,62 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	terrain->terrain_data.resize(length);
 	infile.read(reinterpret_cast<char*>(terrain->terrain_data.data()), length);
 	infile.close();
+
+	terrain->size = size;
+	terrain->scale.x = 1.0;
+	terrain->scale.y = 1.0;
+	terrain->scale.z = 1.0;
+	terrain->generate_buffers();
+	terrain->renderer_init();
+	return terrain;
+}
+
+Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
+	// The temporary high-accuracy height array
+	float* heights = new float[size * size];
+	for (int i = 0; i < size * size; i++) {
+		heights[i] = 0;
+	}
+
+	float max_height = 256;
+	float min_height = 0;
+	srand(seed);
+	
+	for (int i = 0; i < iter; i ++) {
+		float jump = max_height - (max_height - min_height) * (i / (float)iter);
+		// Generate two random (different!) points
+		int x1 = rand()%size;
+		int z1 = rand()%size;
+		int x2;
+		int z2;
+		do {
+			x2 = rand()%size;
+			z2 = rand()%size;
+		} while (x2 == x1 && z2 == z1);
+
+		for (int z = 0; z < size; z++) {
+			for (int x = 0; x < size; x++) {
+				// 2D cross product, aka dot product with perpendicular vector
+				int y = (x2 - x1) * (z - z1) - (z2 - z1) * (x - x1);
+				if (y > 0) {
+					heights[z * size + x] += jump;
+					// heights[z * size + x] += 10.0;
+				}
+			}
+
+		}
+	}
+
+	Terrain* terrain = new Terrain();
+	terrain->terrain_data = vector<unsigned char>();
+	// Micro-optimisation that avoids reallocating the memory all the time 
+	terrain->terrain_data.resize(size * size);
+	for (int i = 0; i < size * size; i++) {
+		terrain->terrain_data[i] = heights[i];
+	}
+
+	delete heights;
+
 	terrain->size = size;
 	terrain->scale.x = 1.0;
 	terrain->scale.y = 1.0;
