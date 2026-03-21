@@ -44,7 +44,7 @@ int main() {
 	glfwSetKeyCallback(window, key);
 
 	// Terrain* terrain = Terrain::from_raw("res/height128.raw", 128);
-	Terrain* terrain = Terrain::from_fault_gen(32, 64, 0.3, 128);
+	Terrain* terrain = Terrain::from_fault_gen(32, 256, 0.01, 128);
 	if (!terrain) return -4;
 
 	// float vertices[] = {
