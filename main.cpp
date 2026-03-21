@@ -52,15 +52,12 @@ int main() {
 	Shader shader("res/vert.glsl", "res/frag.glsl");
 	shader.use(); 
 
-	mat4 model = mat4(1.0);
-	Uniform model_uniform = shader.get_uniform("model");
-	model_uniform.send(model);
-
 	// Camera
 	Camera camera(vec3(0.0f, 100.0f, 300.0f));
 	Uniform view_uniform = shader.get_uniform("view");
 	view_uniform.send(camera.get_view_matrix());
 
+	// Projection
 	mat4 projection = mat4(1.0);
 	projection = glm::perspective(
 		glm::radians(90.0f), 
