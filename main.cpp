@@ -58,7 +58,7 @@ int main() {
 	// }; 
 
 	// terrain->set_scale(2.0/128, 2.0/128, 0.5/128/2);
-	terrain->set_scale(5.0, 0.5, 5.0);
+	terrain->set_scale(vec3(5.0f, 0.5f, 5.0f));
 	// float* vertices = terrain->get_vertex_data();
 	// unsigned int* indices = terrain->get_index_data();
 	// int index_count = terrain->get_index_count();

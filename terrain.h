@@ -3,9 +3,11 @@
 
 #include <string>
 #include <vector>
+#include <glm/glm.hpp>
 
 using std::string;
 using std::vector;
+using glm::vec3;
 
 class Terrain {
 	public:
@@ -21,23 +23,14 @@ class Terrain {
 		void draw();
 
 		/// @brief Set the scale of the terrain
-		/// @param x The X scale
-		/// @param y The Y scale
-		/// @param z The Z scale
-		void set_scale(float x, float y, float z);
-
-		/// @brief Gets the count of individual items in the vertex buffer
-		/// Not to be confused with vertex count, as each vertex has 5 floats
-		/// @return The number of floats in the vertex buffer
-		int get_vertex_component_count();
+		/// @param scale The scale to draw the terrain
+		void set_scale(vec3 scale);
 	private:
 		vector<unsigned char> terrain_data;
 		// Vertex attributes are three floats for position and 2 for UVs
 		vector<float> vertex_buffer;
 		vector<unsigned int> index_buffer;
-		float scale_x;
-		float scale_y;
-		float scale_z;
+		vec3 scale;
 		int size;
 		unsigned int VAO;
 		unsigned int VBO;

@@ -27,18 +27,16 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	infile.read(reinterpret_cast<char*>(terrain->terrain_data.data()), length);
 	infile.close();
 	terrain->size = size;
-	terrain->scale_x = 1.0;
-	terrain->scale_y = 1.0;
-	terrain->scale_z = 1.0;
+	terrain->scale.x = 1.0;
+	terrain->scale.y = 1.0;
+	terrain->scale.z = 1.0;
 	terrain->generate_buffers();
 	terrain->renderer_init();
 	return terrain;
 }
 
-void Terrain::set_scale(float x, float y, float z) {
-	this->scale_x = x;
-	this->scale_y = y;
-	this->scale_z = z;
+void Terrain::set_scale(vec3 scale) {
+	this->scale = scale;
 	this->generate_buffers();
 	this->update_vao();
 }
@@ -50,9 +48,9 @@ void Terrain::generate_buffers() {
 	for (int z = 0; z < size; z++) {
 		for (int x = 0; x < size; x++) {
 			int y = terrain_data[z * size + x];
-			vertex_buffer.push_back((x - size / 2) * scale_x);
-			vertex_buffer.push_back(y * scale_y);
-			vertex_buffer.push_back((z - size / 2) * scale_z);
+			vertex_buffer.push_back((x - size / 2) * scale.x);
+			vertex_buffer.push_back(y * scale.y);
+			vertex_buffer.push_back((z - size / 2) * scale.z);
 			vertex_buffer.push_back(x / (float)size);
 			vertex_buffer.push_back(z / (float)size);
 		}
@@ -71,10 +69,6 @@ void Terrain::generate_buffers() {
 			index_buffer.push_back((z + 1) * size + x); // Bottom left of tile
 		}
 	}
-}
-
-int Terrain::get_vertex_component_count() {
-	return this->vertex_buffer.size();
 }
 
 void Terrain::renderer_init() {
