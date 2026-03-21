@@ -25,6 +25,17 @@ class Terrain {
 		/// @brief Set the scale of the terrain
 		/// @param scale The scale to draw the terrain
 		void set_scale(vec3 scale);
+
+		/// @brief Get the height of the terrain at a given location
+		/// Accounts for scaling of terrain in the world.
+		/// If outside of the borders of the world, the height returned will be
+		/// clamped to the edges.
+		/// This function does nothing with the Y coordinate passed in, and
+		/// returns what the Y coordinate would be if the player was on the 
+		/// ground.
+		/// @param location 
+		/// @return The height of the terrain at the given position
+		float get_height_at_location(vec3 location);
 	private:
 		vector<unsigned char> terrain_data;
 		// Vertex attributes are three floats for position and 2 for UVs
@@ -36,8 +47,7 @@ class Terrain {
 		unsigned int VBO;
 		unsigned int EBO;
 		unsigned int texture;
-		// Don't use the constructor, use a static method for either image or
-		// generated
+		// Don't use the constructor, use a static method
 		Terrain();
 		void generate_buffers();
 		void renderer_init();

@@ -230,6 +230,10 @@ int main() {
 		camera.pos_input(pos_input);
 		camera.dir_input(dir_input);
 		view_uniform.send(camera.get_view_matrix());
+		vec3 cam_pos = camera.get_position();
+		float height = terrain->get_height_at_location(cam_pos);
+		cam_pos.y = height + 1.8; // Height of an average person is 1.8m ish
+		camera.set_position(cam_pos);
 
 		// glBindVertexArray(VAO);
 		// glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, 0);
