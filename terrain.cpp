@@ -30,12 +30,8 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	infile.close();
 
 	terrain->size = size;
-	terrain->scale.x = 1.0;
-	terrain->scale.y = 1.0;
-	terrain->scale.z = 1.0;
 	terrain->initialised = false;
-	// terrain->generate_buffers();
-	// terrain->renderer_init();
+	terrain->set_scale(vec3(1.0f, 1.0f, 1.0f));
 	return terrain;
 }
 
@@ -111,18 +107,15 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 	// Micro-optimisation that avoids reallocating the memory all the time 
 	terrain->terrain_data.resize(size * size);
 	for (int i = 0; i < size * size; i++) {
+		// Normalisin
 		terrain->terrain_data[i] = (heights[i] - min) / (max - min) * 255.0f;
 	}
 
 	delete heights;
 
 	terrain->size = size;
-	terrain->scale.x = 1.0;
-	terrain->scale.y = 1.0;
-	terrain->scale.z = 1.0;
 	terrain->initialised = false;
-	// terrain->generate_buffers();
-	// terrain->renderer_init();
+	terrain->set_scale(vec3(1.0f, 1.0f, 1.0f));
 	return terrain;
 }
 
