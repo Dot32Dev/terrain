@@ -31,8 +31,9 @@ Terrain* Terrain::from_raw(string file_name, int size) {
 	terrain->scale.x = 1.0;
 	terrain->scale.y = 1.0;
 	terrain->scale.z = 1.0;
-	terrain->generate_buffers();
-	terrain->renderer_init();
+	terrain->initialised = false;
+	// terrain->generate_buffers();
+	// terrain->renderer_init();
 	return terrain;
 }
 
@@ -116,15 +117,18 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 	terrain->scale.x = 1.0;
 	terrain->scale.y = 1.0;
 	terrain->scale.z = 1.0;
-	terrain->generate_buffers();
-	terrain->renderer_init();
+	terrain->initialised = false;
+	// terrain->generate_buffers();
+	// terrain->renderer_init();
 	return terrain;
 }
 
 void Terrain::set_scale(vec3 scale) {
 	this->scale = scale;
-	this->generate_buffers();
-	this->update_vao();
+	if (initialised) {
+		generate_buffers();
+		update_vao();
+	}
 }
 
 void Terrain::generate_buffers() {
@@ -226,6 +230,10 @@ void Terrain::renderer_init() {
 }
 
 void Terrain::draw() {
+	if (!initialised) {
+		generate_buffers();
+		renderer_init();
+	}
 	glBindVertexArray(VAO);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glDrawElements(GL_TRIANGLES, index_buffer.size(), GL_UNSIGNED_INT, 0);

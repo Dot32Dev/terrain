@@ -55,6 +55,9 @@ class Terrain {
 		unsigned int VBO;
 		unsigned int EBO;
 		unsigned int texture;
+		// So that the class can be constructed before the opengl context
+		// The class only initialises its buffers the first frame draw is called
+		bool initialised;
 		// Don't use the constructor, use a static method
 		Terrain();
 		void generate_buffers();
