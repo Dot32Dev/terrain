@@ -12,13 +12,24 @@
 using std::ifstream;
 using std::stringstream;
 using std::cout;
+using std::cin;
 using std::endl;
+using std::getline;
+using std::to_string;
+using std::stoi;
+using std::stof;
 using glm::vec2;
 using glm::vec3;
 using glm::mat4;
 
 const int WIN_W = 1280;
 const int WIN_H = 720;
+
+const string DEFAULT_FILENAME = "res/height128.raw";
+const int DEFAULT_TERRAIN_SIZE = 128;
+const int DEFAULT_RAND_SEED = 32;
+const int DEFAULT_ITERATIONS = 256;
+const float DEFAULT_FIR_WEIGHT = 0.01; 
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
@@ -27,6 +38,62 @@ void resize(GLFWwindow* window, int width, int height);
 void key(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main() {
+	start:
+	cout << "Enter 1 to load from file, enter 2 for fractal noise:" << endl;
+	int menu;
+	cin >> menu;
+	cin.ignore();
+	if (menu > 2 || menu < 1) goto start; // Goto is genuinely nicer than loop
+
+	cout << "For all configuration options, leave blank for the suggestion in ";
+	cout << "the brackets" << endl;
+
+	Terrain* terrain;
+	if (menu == 1) {
+		cout << "Enter filename (" << DEFAULT_FILENAME << "):";
+		string filename;
+		getline(cin, filename);
+		if (filename.empty()) filename = DEFAULT_FILENAME;
+
+		cout << "Enter file dimensions (" << DEFAULT_TERRAIN_SIZE << "):";
+		string size;
+		getline(cin, size);
+		if (size.empty()) size = to_string(DEFAULT_TERRAIN_SIZE);
+
+		terrain = Terrain::from_raw(filename, stoi(size));
+	} else {
+		cout << "Enter random seed (" << DEFAULT_RAND_SEED << "):";
+		string rand;
+		getline(cin, rand);
+		if (rand.empty()) rand = to_string(DEFAULT_RAND_SEED);
+
+		cout << "Enter number of iterations (" << DEFAULT_ITERATIONS << "):";
+		string iter;
+		getline(cin, iter);
+		if (iter.empty()) iter = to_string(DEFAULT_ITERATIONS);
+
+		cout << "Enter FIR filter weight (" << DEFAULT_FIR_WEIGHT << "):";
+		string fir;
+		getline(cin, fir);
+		if (fir.empty()) fir = to_string(DEFAULT_FIR_WEIGHT);
+
+		cout << "Enter file dimensions (" << DEFAULT_TERRAIN_SIZE << "):";
+		string size;
+		getline(cin, size);
+		if (size.empty()) size = to_string(DEFAULT_TERRAIN_SIZE);
+
+		terrain = Terrain::from_fault_gen(
+			stoi(rand), 
+			stoi(iter), 
+			stof(fir), 
+			stoi(size)
+		);
+	}
+
+	if (!terrain) return -4;
+	cout << "Generated Terrain Succesfully" << endl;
+	terrain->set_scale(vec3(5.0f, 0.5f, 5.0f));
+
 	if (!glfwInit()) return -1;
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -42,12 +109,6 @@ int main() {
 
 	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetKeyCallback(window, key);
-
-	// Terrain* terrain = Terrain::from_raw("res/height128.raw", 128);
-	Terrain* terrain = Terrain::from_fault_gen(32, 256, 0.01, 128);
-	if (!terrain) return -4;
-
-	terrain->set_scale(vec3(5.0f, 0.5f, 5.0f));
 
 	Shader shader("res/vert.glsl", "res/frag.glsl");
 	shader.use(); 

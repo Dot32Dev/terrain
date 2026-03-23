@@ -2,6 +2,8 @@
 #include <fstream>
 #include <glad/glad.h>
 
+#include <iostream>
+
 using std::ifstream;
 using std::ios;
 
@@ -48,6 +50,7 @@ void filter_pass(float* arr, int inc, float weight, int size) {
 }
 
 Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
+	std::cout << seed << " " << iter << " " << fir << " " << size << std::endl;
 	// The temporary high-accuracy height array
 	float* heights = new float[size * size];
 	for (int i = 0; i < size * size; i++) {
