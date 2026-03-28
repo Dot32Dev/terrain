@@ -31,7 +31,7 @@ const int DEFAULT_TERRAIN_SIZE = 128;
 const int DEFAULT_RAND_SEED = 32;
 const int DEFAULT_ITERATIONS = 256;
 const float DEFAULT_FIR_WEIGHT = 0.01; 
-const int DEFAULT_TEXTURED = 0;
+const int DEFAULT_TEXTURED = 1;
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
@@ -94,13 +94,13 @@ int main() {
 
 	// Should the terrain be textured with the grass texture, or the heightmap?
 	texture:
-	cout << "Do you want the grass texture? Enter zero for no, and one for yes";
+	cout << "Do you want the grass texture? Enter one for no, and two for yes";
 	cout << ". (" << DEFAULT_TEXTURED << "):";
 	string grass;
 	getline(cin, grass);
 	if (grass.empty()) grass = to_string(DEFAULT_TEXTURED);
 	int grass_int = stoi(grass);
-	if (grass_int > 1 || grass_int < 0) goto texture;
+	if (grass_int > 2 || grass_int < 1) goto texture;
 
 	if (!terrain) return -4;
 	cout << "Generated Terrain Succesfully" << endl;
@@ -122,9 +122,9 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetKeyCallback(window, key);
 
-	// Load images
+	// Load image
 	Texture* texture = nullptr;
-	if (grass_int == 0) {
+	if (grass_int == 1) {
 		texture = Texture::from_data(
 			terrain->get_heightmap_data(), 
 			terrain->get_size(), 
@@ -141,12 +141,18 @@ int main() {
 	}
 	texture->bind();
 
-	Shader shader("res/vert.glsl", "res/frag.glsl");
-	shader.use(); 
+	// Load shader
+	Shader* shader = nullptr;
+	if (grass_int == 1) {
+		shader = new Shader("res/vert.glsl", "res/frag.glsl");
+	} else {
+		shader = new Shader("res/vert.glsl", "res/frag 3-channel.glsl");
+	}
+	shader->use(); 
 
 	// Camera
 	Camera camera(vec3(0.0f, 100.0f, 300.0f));
-	Uniform view_uniform = shader.get_uniform("view");
+	Uniform view_uniform = shader->get_uniform("view");
 	view_uniform.send(camera.get_view_matrix());
 
 	// Projection
@@ -158,7 +164,7 @@ int main() {
 		100.0f
 	);
 
-	Uniform projection_uniform = shader.get_uniform("projection");
+	Uniform projection_uniform = shader->get_uniform("projection");
 	projection_uniform_pointer = &projection_uniform;
 	projection_uniform.send(projection);
 
@@ -224,6 +230,7 @@ int main() {
 
 	delete terrain;
 	delete texture;
+	delete shader;
 	glfwTerminate();
 	return 0;
 }
