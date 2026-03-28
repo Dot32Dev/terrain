@@ -30,6 +30,7 @@ const int DEFAULT_TERRAIN_SIZE = 128;
 const int DEFAULT_RAND_SEED = 32;
 const int DEFAULT_ITERATIONS = 256;
 const float DEFAULT_FIR_WEIGHT = 0.01; 
+const int DEFAULT_TEXTURED = 0;
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
@@ -89,6 +90,16 @@ int main() {
 			stoi(size)
 		);
 	}
+
+	// Should the terrain be textured with the grass texture, or the heightmap?
+	texture:
+	cout << "Do you want the grass texture? Enter zero for no, and one for yes";
+	cout << ". (" << DEFAULT_TEXTURED << "):";
+	string grass;
+	getline(cin, grass);
+	if (grass.empty()) grass = to_string(DEFAULT_TEXTURED);
+	int grass_int = stoi(grass);
+	if (grass_int > 1 || grass_int < 0) goto texture;
 
 	if (!terrain) return -4;
 	cout << "Generated Terrain Succesfully" << endl;
@@ -191,6 +202,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
+	delete terrain;
 	glfwTerminate();
 	return 0;
 }
