@@ -16,7 +16,7 @@ public:
 	/// @param channels The number of channels the texture will have
 	/// There must be at least width*height*channels unsigned chars in the data
 	/// @return A Texture object which can be bound
-	static Texture from_data(
+	static Texture* from_data(
 		vector<unsigned char> data, 
 		int width, 
 		int height, 
@@ -30,7 +30,7 @@ public:
 	/// @param channels The number of channels the texture will have
 	/// The file must be larger than width*height*channels
 	/// @return A Texture object which can be bound
-	static Texture from_raw(
+	static Texture* from_raw(
 		string filename, 
 		int width, 
 		int height, 

@@ -44,6 +44,14 @@ class Terrain {
 		/// @param location 
 		/// @return The height of the terrain at the given position
 		float get_height_at_location(vec3 location);
+
+		/// @brief Get the size of the heightmap data
+		/// @return The size of the heightmap data
+		int get_size() const;
+
+		/// @brief Get the 
+		/// @return 
+		const vector<unsigned char> get_heightmap_data() const;
 	private:
 		vector<unsigned char> terrain_data;
 		// Vertex attributes are three floats for position and 2 for UVs
@@ -54,7 +62,6 @@ class Terrain {
 		unsigned int VAO;
 		unsigned int VBO;
 		unsigned int EBO;
-		unsigned int texture;
 		// So that the class can be constructed before the opengl context
 		// The class only initialises its buffers the first frame draw is called
 		bool initialised;

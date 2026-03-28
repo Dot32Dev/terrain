@@ -8,6 +8,7 @@
 #include "terrain.h"
 #include "shader.h"
 #include "camera.h"
+#include "texture.h"
 
 using std::ifstream;
 using std::stringstream;
@@ -121,6 +122,25 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetKeyCallback(window, key);
 
+	// Load images
+	Texture* texture = nullptr;
+	if (grass_int == 0) {
+		texture = Texture::from_data(
+			terrain->get_heightmap_data(), 
+			terrain->get_size(), 
+			terrain->get_size(), 
+			1
+		);
+	} else {
+		texture = Texture::from_raw(
+			"res/floor2160.raw", 
+			2160, 
+			2160, 
+			3
+		);
+	}
+	texture->bind();
+
 	Shader shader("res/vert.glsl", "res/frag.glsl");
 	shader.use(); 
 
@@ -203,6 +223,7 @@ int main() {
 	}
 
 	delete terrain;
+	delete texture;
 	glfwTerminate();
 	return 0;
 }

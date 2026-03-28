@@ -202,27 +202,6 @@ void Terrain::renderer_init() {
 		(void*)(3 * sizeof(float))
 	);
 	glEnableVertexAttribArray(1);
-
-	// Texture setup
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(
-		GL_TEXTURE_2D, 
-		0, 
-		GL_RED, 
-		128, 
-		128, 
-		0, 
-		GL_RED, 
-		GL_UNSIGNED_BYTE, 
-		terrain_data.data()
-	);
-	glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 void Terrain::draw() {
@@ -231,7 +210,6 @@ void Terrain::draw() {
 		renderer_init();
 	}
 	glBindVertexArray(VAO);
-	glBindTexture(GL_TEXTURE_2D, texture);
 	glDrawElements(GL_TRIANGLES, index_buffer.size(), GL_UNSIGNED_INT, 0);
 }
 
@@ -281,4 +259,13 @@ float Terrain::get_height_at_location(vec3 location) {
 	// Linear interpolation between z at the found x
 	float height = top + (bottom - top) * z_step;
 	return height;
+}
+
+int Terrain::get_size() const {
+	return size;
+}
+
+const vector<unsigned char> Terrain::get_heightmap_data() const {
+	const vector<unsigned char> data_copy = terrain_data;
+	return data_copy;
 }

@@ -8,21 +8,21 @@ using std::ios;
 
 Texture::Texture() {}
 
-Texture Texture::from_data(
+Texture* Texture::from_data(
 		vector<unsigned char> data, 
 		int width, 
 		int height, 
 		int channels
 ) {
-	Texture texture = Texture(); 
+	Texture* texture = new Texture(); 
 	// Texture setup
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glGenTextures(1, &texture.texture_id);
-	glBindTexture(GL_TEXTURE_2D, texture.texture_id);
+	glGenTextures(1, &texture->texture_id);
+	glBindTexture(GL_TEXTURE_2D, texture->texture_id);
 
 	GLenum format = GL_RGB; // Default RGB if too many channels supplied
 	if (channels == 4) format = GL_RGBA; 
@@ -45,7 +45,7 @@ Texture Texture::from_data(
 	return texture;
 }
 
-Texture Texture::from_raw(
+Texture* Texture::from_raw(
 	string filename, 
 	int width, 
 	int height, 
