@@ -202,6 +202,8 @@ void Terrain::renderer_init() {
 		(void*)(3 * sizeof(float))
 	);
 	glEnableVertexAttribArray(1);
+
+	initialised = true;
 }
 
 void Terrain::draw() {
