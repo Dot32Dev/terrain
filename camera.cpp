@@ -1,6 +1,8 @@
 #include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
@@ -48,7 +50,7 @@ Camera::Camera() :
 	targets.push_back(target);
 }
 
-mat4 Camera::get_view_matrix() {
+mat4 Camera::get_view_matrix() const {
 	// Lerp between previous and current by progress amount
 	vec3 pos = targets[previous].pos 
 		+ (targets[current].pos - targets[previous].pos) * progress;
@@ -82,7 +84,7 @@ void Camera::dir_input(CameraTarget target, vec2 input_vector) {
 	targets[target].dir += input_vector;
 }
 
-const vec3 Camera::get_position(CameraTarget target) {
+const vec3 Camera::get_position(CameraTarget target) const {
 	return targets[target].pos;
 }
 
@@ -92,4 +94,45 @@ void Camera::set_position(CameraTarget target, vec3 position) {
 
 CameraTarget Camera::get_target() const {
 	return current;
+}
+
+CameraTarget Camera::new_target(vec3 pos, vec2 dir) {
+	Target target {
+		pos,
+		dir
+	};
+	targets.push_back(target);
+	return CameraTarget(targets.size() - 1);
+}
+
+void Camera::set_target(CameraTarget target) {
+	if (target == previous) {
+		progress = 1.0 - progress;
+	} else {
+		progress = 0;
+	}
+	previous = current;
+	current = target;
+}
+
+void Camera::next_target() {
+	set_target((current + 1) % targets.size());
+}
+
+void Camera::animate(double dt) {
+	accumulator += dt;
+
+	while (accumulator > 1.0/60) {
+		accumulator -= 1.0/60;
+		progress = progress + (1.0 - progress)/10.0;
+	}
+}
+
+void Camera::set_progress(float progress) {
+	if (progress < 0.0)
+		this->progress = 0;
+	else if (progress > 1.0)
+		this->progress = 1.0;
+	else 
+		this->progress = progress;
 }

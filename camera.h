@@ -9,6 +9,7 @@ using glm::vec3;
 using glm::mat4;
 using std::vector;
 
+/// @brief A Camera Target
 using CameraTarget = std::size_t;
 
 /// @brief Camera
@@ -44,7 +45,7 @@ class Camera {
 		/// current camera target. Call animate_camera(dt) or set_progress(n) to
 		/// influence the progress of the camera between its camera targets.
 		/// @return The matrix to be sent to the shader
-		mat4 get_view_matrix();
+		mat4 get_view_matrix() const;
 
 		/// @brief Move a camera target by some given input
 		/// This should reflect the current input that the user is making.
@@ -69,7 +70,7 @@ class Camera {
 		/// @brief Get the position of a camera target
 		/// @param target The target to get the position of 
 		/// @return The vec3 position of the target
-		const vec3 get_position(CameraTarget target); 
+		const vec3 get_position(CameraTarget target) const; 
 
 		/// @brief Set the position of a camera target
 		/// @param target The target to set the position of 
@@ -80,6 +81,38 @@ class Camera {
 		/// This is necessary for performing actions on the camera
 		/// @return The current camera target
 		CameraTarget get_target() const;
+
+		/// @brief Create a new camera target 
+		/// To use the camera target, use set_target() with the returned target,
+		/// or next_target() to automatically switch to the next camera target
+		/// @param pos The position of the new camera target
+		/// @param dir The direction of the new camera target
+		/// @return The new camera target
+		CameraTarget new_target(vec3 pos, vec2 dir);
+
+		/// @brief Set the active camera target to the specified target
+		/// This will not immediately change the camera view. Use animate(dt)
+		/// to blend smoothly to the new camera target, or set_progress(1.0) to
+		/// teleport there immediately. 
+		/// @param target The target to activate
+		void set_target(CameraTarget target);
+
+		/// @brief Switch the active camera target to the next camera target
+		/// As you have no control over the order of camera targets, it is 
+		/// recommended to create your own array of camera targets and manually
+		/// use set_target() if you want more control.
+		void next_target();
+
+		/// @brief Animates between the previous camera target and the current
+		/// @param dt The delta time between this and the previous frane
+		void animate(double dt);
+
+		/// @brief  Sets the animation progress between the previous and current
+		/// camera targets. 
+		/// A progress of 0.0 is the previous target, and a progress of 1.0 is
+		/// the current target. Input progresses will be clamped to this range.
+		/// @param progress 
+		void set_progress(float progress);
 	private:
 		struct Target {
 			vec3 pos;
@@ -89,6 +122,7 @@ class Camera {
 		CameraTarget current;
 		CameraTarget previous;
 		float progress;
+		double accumulator;
 };
 
 #endif

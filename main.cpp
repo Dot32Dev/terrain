@@ -35,6 +35,7 @@ const int DEFAULT_TEXTURED = 2;
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
+Camera camera;
 
 void resize(GLFWwindow* window, int width, int height);
 void key(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -151,8 +152,9 @@ int main() {
 	shader->use(); 
 
 	// Camera
-	Camera camera(vec3(0.0f, 100.0f, 300.0f));
 	CameraTarget first_person = camera.get_target();
+	camera.set_position(first_person, vec3(0.0f, 100.0f, 300.0f));
+	CameraTarget map = camera.new_target(vec3(0.0f, 300.0f, 500.0f), vec2(0.0, 0.7));
 	Uniform view_uniform = shader->get_uniform("view");
 	view_uniform.send(camera.get_view_matrix());
 
@@ -223,6 +225,7 @@ int main() {
 		cam_pos.y = height + 1.8; // Height of an average person is 1.8m ish
 		camera.set_position(first_person, cam_pos);
 		// Draw
+		camera.animate(delta_time);
 		view_uniform.send(camera.get_view_matrix());
 		terrain->draw();
 
@@ -257,5 +260,11 @@ void key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		} else {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+	}
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+		camera.next_target();
+	}
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		exit(0);
 	}
 }
