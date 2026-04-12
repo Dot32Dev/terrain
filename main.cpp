@@ -31,7 +31,7 @@ const int DEFAULT_TERRAIN_SIZE = 128;
 const int DEFAULT_RAND_SEED = 32;
 const int DEFAULT_ITERATIONS = 256;
 const float DEFAULT_FIR_WEIGHT = 0.01; 
-const int DEFAULT_TEXTURED = 1;
+const int DEFAULT_TEXTURED = 2;
 
 bool line_mode = false;
 Uniform* projection_uniform_pointer;
@@ -152,6 +152,7 @@ int main() {
 
 	// Camera
 	Camera camera(vec3(0.0f, 100.0f, 300.0f));
+	CameraTarget first_person = camera.get_target();
 	Uniform view_uniform = shader->get_uniform("view");
 	view_uniform.send(camera.get_view_matrix());
 
@@ -214,13 +215,13 @@ int main() {
 			dir_input += vec2(rot_speed, 0.0f);
 
 		// Send input to camera
-		camera.pos_input(pos_input);
-		camera.dir_input(dir_input);
+		camera.pos_input(first_person, pos_input);
+		camera.dir_input(first_person, dir_input);
 		// Place camera on ground
-		vec3 cam_pos = camera.get_position();
+		vec3 cam_pos = camera.get_position(first_person);
 		float height = terrain->get_height_at_location(cam_pos);
 		cam_pos.y = height + 1.8; // Height of an average person is 1.8m ish
-		camera.set_position(cam_pos);
+		camera.set_position(first_person, cam_pos);
 		// Draw
 		view_uniform.send(camera.get_view_matrix());
 		terrain->draw();

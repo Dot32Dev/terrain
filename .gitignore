@@ -6,5 +6,7 @@ ipch/
 *.opendb
 .vs/
 .vscode/
+
+# Misc
 *.zip
 *.docx

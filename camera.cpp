@@ -6,14 +6,55 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
-Camera::Camera() {}
+Camera::Camera(vec3 pos, vec2 dir) :
+	targets(vector<Target>()),
+	current(0),
+	previous(0),
+	progress(1.0)
+{
+	Target target {
+		pos,
+		dir
+	};
+
+	targets.push_back(target);
+}
 
 Camera::Camera(vec3 pos) :
-	pos(pos),
-	dir(vec2(0.0f, 0.0f))
-{}
+	targets(vector<Target>()),
+	current(0),
+	previous(0),
+	progress(1.0)
+{
+	Target target {
+		pos,
+		vec2(0.0f, 0.0f)
+	};
+
+	targets.push_back(target);
+}
+
+Camera::Camera() :
+	targets(vector<Target>()),
+	current(0),
+	previous(0),
+	progress(1.0)
+{
+	Target target {
+		vec3(0.0f, 0.0f, 0.0f),
+		vec2(0.0f, 0.0f)
+	};
+
+	targets.push_back(target);
+}
 
 mat4 Camera::get_view_matrix() {
+	// Lerp between previous and current by progress amount
+	vec3 pos = targets[previous].pos 
+		+ (targets[current].pos - targets[previous].pos) * progress;
+	vec2 dir = targets[previous].dir 
+		+ (targets[current].dir - targets[previous].dir) * progress;
+
 	mat4 matrix = mat4(1.0);
 	// Rotate by the camera's dir
 	vec3 pitch_axis = vec3(1.0f, 0.0f, 0.0f);
@@ -27,24 +68,28 @@ mat4 Camera::get_view_matrix() {
 	return matrix;
 }
 
-void Camera::pos_input(vec3 input_vector) {
+void Camera::pos_input(CameraTarget target, vec3 input_vector) {
 	// Rotate the input by the direction the camera is looking
 	// This is so that if you walk forwards, you move forwards relative to the
 	// view, rather than the cardinal direction which is forwards.
 	vec3 yaw_axis = vec3(0.0f, -1.0f, 0.0f);
-	mat4 rotation = rotate(mat4(1.0), dir.x, yaw_axis);
+	mat4 rotation = rotate(mat4(1.0), targets[target].dir.x, yaw_axis);
 	// This is just rotation * input, except rotation is mat4 and input is vec3
-	pos += vec3(rotation * vec4(input_vector, 1.0));
+	targets[target].pos += vec3(rotation * vec4(input_vector, 1.0));
 }
 
-void Camera::dir_input(vec2 input_vector) {
-	dir += input_vector;
+void Camera::dir_input(CameraTarget target, vec2 input_vector) {
+	targets[target].dir += input_vector;
 }
 
-const vec3 Camera::get_position() {
-	return pos;
+const vec3 Camera::get_position(CameraTarget target) {
+	return targets[target].pos;
 }
 
-void Camera::set_position(vec3 position) {
-	pos = position;
+void Camera::set_position(CameraTarget target, vec3 position) {
+	targets[target].pos = position;
+}
+
+CameraTarget Camera::get_target() const {
+	return current;
 }
