@@ -6,6 +6,8 @@
 
 using std::ifstream;
 using std::ios;
+using std::cout;
+using std::endl;
 
 Terrain::Terrain() {}
 
@@ -46,7 +48,7 @@ void filter_pass(float* arr, int inc, float weight, int size) {
 }
 
 Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
-	std::cout << seed << " " << iter << " " << fir << " " << size << std::endl;
+	cout << "Generating... " << endl;
 	// The temporary high-accuracy height array
 	float* heights = new float[size * size];
 	for (int i = 0; i < size * size; i++) {
@@ -58,6 +60,10 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 	srand(seed);
 	
 	for (int i = 0; i < iter; i ++) {
+		if (i % (iter / 10) == 0) {
+			cout << "#";
+		}
+
 		float jump = max_height - (max_height - min_height) * (i / (float)iter);
 		// Generate two random (different!) points
 		int x1 = rand()%size;
@@ -91,6 +97,8 @@ Terrain* Terrain::from_fault_gen(int seed, int iter, float fir, int size) {
 		for (int x = 0; x < size; x++) 
 			filter_pass(&heights[size * (size - 1)], -size, fir, size);
 	}
+
+	cout << endl;
 
 	// Get the range
 	float min = heights[0];

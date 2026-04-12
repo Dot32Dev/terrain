@@ -1,8 +1,6 @@
 #include "camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;

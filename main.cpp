@@ -123,6 +123,11 @@ int main() {
 	glfwSetFramebufferSizeCallback(window, resize);
 	glfwSetKeyCallback(window, key);
 
+	// So that we aren't staring at a white screen while it loads
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glfwSwapBuffers(window);
+
 	// Load image
 	Texture* texture = nullptr;
 	if (grass_int == 1) {
@@ -176,7 +181,6 @@ int main() {
 
 	resize(window, WIN_W, WIN_H);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
 	double delta_time = 0.0;
