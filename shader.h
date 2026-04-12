@@ -21,6 +21,11 @@ class Uniform {
 		/// Assumes the relevant shader is currently bound
 		/// @param matrix The matrix to send to the shader
 		void send(const mat4& matrix);
+
+		/// @brief Send a float to a uniform of a shader
+		/// Assumes the relevant shader is currentrly bound
+		/// @param value The value to send to the shader
+		void send(float value);
 	private:
 		friend class Shader; // So that only the shader may construct Uniforms
 		Uniform(unsigned int program_id, const string& uniform, Shader* shader);

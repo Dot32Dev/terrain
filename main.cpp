@@ -146,10 +146,13 @@ int main() {
 	Shader* shader = nullptr;
 	if (grass_int == 1) {
 		shader = new Shader("res/vert.glsl", "res/frag.glsl");
+		shader->use(); 
 	} else {
 		shader = new Shader("res/vert.glsl", "res/frag 3-channel.glsl");
+		shader->use(); 
+		Uniform tex_scale_uniform = shader->get_uniform("scale");
+		tex_scale_uniform.send(terrain->get_size() / 4);
 	}
-	shader->use(); 
 
 	// Camera
 	CameraTarget first_person = camera.get_target();

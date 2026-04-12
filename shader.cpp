@@ -87,3 +87,7 @@ void Uniform::send(const mat4& matrix) {
 	// location, number of matrices, transposing, matrix
 	glUniformMatrix4fv(uniform_location, 1, GL_FALSE, value_ptr(matrix));
 }
+
+void Uniform::send(float value) {
+	glUniform1f(uniform_location, value);
+}
