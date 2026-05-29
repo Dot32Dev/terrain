@@ -1,6 +1,6 @@
 #include "texture.h"
 
-#include <GLAD/glad.h>
+#include <glad/glad.h>
 #include <fstream>
 
 using std::ifstream;

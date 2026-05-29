@@ -15,6 +15,8 @@ using std::string;
 using std::map;
 using glm::mat4;
 
+class Shader;
+
 class Uniform {
 	public:
 		/// @brief Send a mat4 to a uniform of a shader

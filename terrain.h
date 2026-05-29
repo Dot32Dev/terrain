@@ -72,4 +72,4 @@ class Terrain {
 		void update_vao();
 };
 
-#endif TERRAIN_H
+#endif // TERRAIN_H
